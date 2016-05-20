@@ -26,10 +26,10 @@ A couple of notes:
 
 
 The only requirements to be able to run my scripts are the following:
-1. Download or clone repo.
-2. Have node.js installed
-3. Install the selenium-webdriver npm package under the StoreTests directory: npm install selenium-webdriver
-4. Install the chai npm package under the StoreTests directory: npm install chai
-5. Install the request npm package under the StoreTests directory: npm install request
-6. The tests can be run via the command line, on the StoreTests directory using node.js: node StoreTestSuite.js
-7. Alternatively, I installed the WebStorm IDE from Jetbrains, and you can just run the StoreTestSuite.js file
+- Download or clone repo.
+- Have node.js installed
+- Install the selenium-webdriver npm package under the StoreTests directory: npm install selenium-webdriver
+- Install the chai npm package under the StoreTests directory: npm install chai
+- Install the request npm package under the StoreTests directory: npm install request
+- The tests can be run via the command line, on the StoreTests directory using node.js: node StoreTestSuite.js
+- Alternatively, I installed the WebStorm IDE from Jetbrains, and you can just run the StoreTestSuite.js file
