@@ -21,22 +21,23 @@ module.exports = function(driver){
         var productPrice = 0;
         var productQuantity = 0;
         var expectedTotal = 0;
-        var expectedTotalString = "";
+        var expectedTotalString = "";        
 
         productRow.findElement(webDriver.By.xpath("//td//span[@class='pricedisplay']")).getInnerHtml().then(function(html){
             productPrice = parseFloat(html.toString().substr(1)).toFixed(2);
+            console.log("From Calculate and Validate Total Product Cost before checkout:");
             console.log("Price: "+productPrice);
         });
-        productRow.findElement(webDriver.By.xpath("//td[contains(@class,'wpsc_product_quantity')]//input[@name='quantity']")).getAttribute("value").then(expectedTotal = function(value){
+        productRow.findElement(webDriver.By.xpath("//td[contains(@class,'wpsc_product_quantity')]//input[@name='quantity']")).getAttribute("value").then(function(value){
             productQuantity = parseFloat(value.toString()).toFixed(2);
             console.log("Quantity String: "+productQuantity);
             expectedTotal = productPrice*productQuantity;
             expectedTotalString = expectedTotal.toFixed(2).toString();
             console.log("Total Price: "+expectedTotalString);
             productRow.findElement(webDriver.By.xpath("//td[contains(@class,'wpsc_product_price')]//span[.='$"+expectedTotalString+"']"));
-            return expectedTotal;
+            this.orderTotal = expectedTotal;
         });
-        return expectedTotal;
+        
     };
 
     this.checkout = function(){        
@@ -60,11 +61,13 @@ module.exports = function(driver){
         this.waitForCheckoutFormToLoad();
     };
     
-    this.validateOrderTotal = function(expectedOrderTotal){
-        this.expectedTotal = expectedOrderTotal;
-        var orderTotalString = this.expectedTotal.toFixed(2).toString();
+    this.validateOrderTotal = function(){
         this.session.findElement(webDriver.By.xpath("//tr[@class='total_price total_item']//span/span")).getInnerHtml().then(function(html) {
+            var orderTotalString = this.orderTotal.toFixed(2).toString();
             var expectedTotalString = "$"+orderTotalString;
+            console.log("From Validate Order Total on Checkout:");
+            console.log("Expected Total: "+expectedTotalString);
+            console.log("Actual Total: "+html);
             assert.equal(html,expectedTotalString);
         });
     };

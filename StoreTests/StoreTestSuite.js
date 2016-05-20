@@ -27,9 +27,9 @@ function StoreTestSuite() {
         this.searchResultsPage.openProductDetails('Apple iPhone 4S 16GB SIM-Free – Black');
         this.detailsPage.addProductToCart();
         this.detailsPage.goToCheckoutFromAddToCart();
-        var expectedOrderTotal = this.checkoutPage.calculateAndValidateTotalProductCost();
+        this.checkoutPage.calculateAndValidateTotalProductCost();
         this.checkoutPage.continueToCheckoutForm();
-        this.checkoutPage.validateOrderTotal(expectedOrderTotal);
+        this.checkoutPage.validateOrderTotal(this.checkoutPage.orderTotal);
         this.checkoutPage.checkout();
         this.tearDown();
     };
@@ -104,8 +104,10 @@ function StoreTestSuite() {
 
 
 var TestSuite = new StoreTestSuite();
+TestSuite.altFuelStationsTest();
 TestSuite.orderProductTest();
+TestSuite.orderProductCancelTest();
 //TestSuite.accountChangesTest();
-//TestSuite.orderProductCancelTest();
-//TestSuite.altFuelStationsTest();
+
+
 
