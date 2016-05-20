@@ -5,6 +5,8 @@ var SearchResultsPage = require('./SearchResultsPage');
 var DetailsPage = require('./DetailsPage');
 var CheckoutPage = require('./CheckoutPage');
 var AccountPage = require('./AccountPage');
+var expect = require('chai').expect;
+var request = require('request');
 
 function StoreTestSuite() {
 
@@ -25,6 +27,9 @@ function StoreTestSuite() {
         this.searchResultsPage.openProductDetails('Apple iPhone 4S 16GB SIM-Free – Black');
         this.detailsPage.addProductToCart();
         this.detailsPage.goToCheckoutFromAddToCart();
+        var expectedOrderTotal = this.checkoutPage.calculateAndValidateTotalProductCost();
+        this.checkoutPage.continueToCheckoutForm();
+        this.checkoutPage.validateOrderTotal(expectedOrderTotal);
         this.checkoutPage.checkout();
         this.tearDown();
     };
@@ -48,7 +53,50 @@ function StoreTestSuite() {
         this.checkoutPage.validateCartIsEmpty();
         this.tearDown();
     };
-        
+
+    this.altFuelStationsTest = function() {
+        request
+            .get("https://api.data.gov/nrel/alt-fuel-stations/v1/nearest.json?api_key=KHdXfK9qcZwK9rnw19v29C1TgEYY5Cf4xgqgMpbi&location=Austin+TX&ev_network=ChargePoint+Network", function(error, response, body){
+                expect(response.statusCode).to.equal(200);
+                var cleaned = body.trim();
+                var json = JSON.parse(cleaned);
+                var jsonFuelStations = json.fuel_stations;
+                var stationNames = [];
+                for(var station in jsonFuelStations){
+                    stationNames.push(jsonFuelStations[station].station_name);
+                }
+                expect(stationNames).to.include("HYATT AUSTIN");
+
+                for(station in jsonFuelStations){
+                    if(jsonFuelStations[station].station_name == "HYATT AUSTIN"){
+                        var stationId = jsonFuelStations[station].id;
+                    }
+                }
+
+                request
+                    .get("https://api.data.gov/nrel/alt-fuel-stations/v1/nearest.json?api_key=KHdXfK9qcZwK9rnw19v29C1TgEYY5Cf4xgqgMpbi&location=Austin+TX&ev_network=ChargePoint+Network", function(error, response, body){
+                        expect(response.statusCode).to.equal(200);
+                        var cleaned = body.trim();
+                        var json = JSON.parse(cleaned);
+                        var jsonFuelStations = json.fuel_stations;
+                        for(station in jsonFuelStations){
+                            if(jsonFuelStations[station].id == stationId){
+                                var stationAddress = jsonFuelStations[station].street_address;
+                                var stationCity = jsonFuelStations[station].city;
+                                var stationState = jsonFuelStations[station].state;
+                                var stationZip = jsonFuelStations[station].zip;
+                                expect(stationAddress).to.equal("208 Barton Springs Rd");
+                                expect(stationCity).to.equal("Austin");
+                                expect(stationState).to.equal("TX");
+                                expect(stationZip).to.equal("78704");
+                                console.log(jsonFuelStations[station]);
+                            }
+                        }
+                    });
+            });
+
+    };
+
     this.tearDown = function() {
         this.session.quit();
     };
@@ -58,5 +106,6 @@ function StoreTestSuite() {
 var TestSuite = new StoreTestSuite();
 TestSuite.orderProductTest();
 //TestSuite.accountChangesTest();
-TestSuite.orderProductCancelTest();
+//TestSuite.orderProductCancelTest();
+//TestSuite.altFuelStationsTest();
 
